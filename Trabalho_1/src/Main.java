@@ -1,17 +1,21 @@
 package src;
 
-import src.modulos.enums.Cores;
-import src.modulos.Mapa;
-
 import java.util.Objects;
 import java.util.Scanner;
+import src.modulos.Mapa;
+import src.modulos.enums.Cores;
 
 class Main {
     boolean modoTeste = false;
 
     Scanner scan = new Scanner(System.in);
 
-    void main(String[] args) {
+    public static void main(String[] args) {
+        Main app = new Main();
+        app.iniciar();
+    }
+
+    void iniciar() {
         if (modoTeste) {
             var mapaTeste = this.mapaTeste();
             jornada(mapaTeste);

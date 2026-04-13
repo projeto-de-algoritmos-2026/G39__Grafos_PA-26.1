@@ -1,14 +1,13 @@
 package src.modulos;
 
+import java.util.ArrayList;
+import java.util.List;
 import src.modulos.algoritmos.Dijkstra;
 import src.modulos.algoritmos.ResultadoDijkstra;
 import src.modulos.enums.Cores;
 import src.modulos.enums.TipoCelula;
 import src.modulos.graph.Grafo;
 import src.modulos.graph.No;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Mapa {
     private static final String SEPARA_CORDS = ",";
@@ -49,6 +48,14 @@ public class Mapa {
         }
     }
 
+    private void sleep(int ms) {
+    try {
+        Thread.sleep(ms);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+}
+
     private void conectarVizinhos() { //conecta cada no com os de cima baixo direita e esquerda
         int[][] direcoes = {
                 {-1, 0}, // cima
@@ -59,7 +66,6 @@ public class Mapa {
 
         for (int i = 0; i < altura; i++) {
             for (int j = 0; j < largura; j++) {
-                No atual = grafo.getNo(id(i, j));
 
                 for (int[] d : direcoes) {
                     int ni = i + d[0];
@@ -127,6 +133,7 @@ public class Mapa {
     }
 
     public Object[] coletaMoedas() {
+        logJornada.clear();
         var resultado = new Object[5];
         int distancia = 0;
         int custo = 0;
@@ -166,27 +173,61 @@ public class Mapa {
         resultado[2] = custo;
         resultado[3] = armadilhasPassadas;
         resultado[4] = monstrosMortos;
+
+        for (String log : logJornada) {
+            System.out.println(log);
+        }
+
         return resultado;
     }
 
-    public void colorirCaminho(List<No> caminho) { //colore o caminho tomado e seta a ultima celula como o jogador
-        for (No celula : caminho) {
-            if (celula.getInformacao() == TipoCelula.MONSTRO) {//mata o monstro
-                alteraCustoChegar(celula, 1);
-                monstrosMortos = monstrosMortos + 1;
+    public void colorirCaminho(List<No> caminho) {
+        for (int i = 1; i < caminho.size(); i++) {
+            No atual = grafo.getNo(id(posJogador[0], posJogador[1]));
+            if (atual != null) {
+                atual.setInformacao(TipoCelula.CAMINHO); // ou LIVRE, dependendo do que você quer
             }
-            if (celula.getInformacao() == TipoCelula.ARMADILHA) armadilhasPassadas = armadilhasPassadas + 1;//marca uma armadilha
-            celula.setInformacao(TipoCelula.CAMINHO);
-        }
-        caminho.getLast().setInformacao(TipoCelula.JOGADOR);
-        var cords = caminho.getLast().getId().split(SEPARA_CORDS);
-        posJogador = new int[]{Integer.parseInt(cords[0]), Integer.parseInt(cords[1])};
+            No celula = caminho.get(i);
 
-        imprimir("andando");
+            String pos = celula.getId();
+
+            logJornada.add("Andou para: " + pos);
+
+            if (celula.getInformacao() == TipoCelula.MONSTRO) {
+                alteraCustoChegar(celula, 1);
+                monstrosMortos++;
+                logJornada.add("Monstro derrotado em: " + pos);
+            }
+
+            if (celula.getInformacao() == TipoCelula.ARMADILHA) {
+                armadilhasPassadas++;
+                logJornada.add("Armadilha em: " + pos);
+            }
+
+            if (celula.getInformacao() == TipoCelula.MOEDA) {
+                logJornada.add("Moeda coletada em: " + pos);
+            }
+
+            // move jogador
+            celula.setInformacao(TipoCelula.JOGADOR);
+
+            // atualiza posição
+            var cords = celula.getId().split(",");
+            posJogador = new int[]{
+                Integer.parseInt(cords[0]),
+                Integer.parseInt(cords[1])
+            };
+
+            // imprime e espera
+            imprimir("andando");
+            sleep(200); // ajusta velocidade aqui (ms)
+                    }
     }
 
     public void imprimir(String titulo) {
-        Cores.VERDE.imprimeln("\nMapa " + titulo + ":");;
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        Cores.VERDE.imprimeln("\nMapa " + titulo + ":");
 
         imprimirCordsCol(largura);
 
@@ -235,4 +276,6 @@ public class Mapa {
     private void imprimirEapacamento() {
         for (int i = -1; i < larguraCord; i++) System.out.print(" ");
     }
+
+    private final List<String> logJornada = new ArrayList<>();
 }
