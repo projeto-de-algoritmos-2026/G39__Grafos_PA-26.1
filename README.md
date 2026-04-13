@@ -13,7 +13,7 @@ Conteúdo da Disciplina: PROJETO DE ALGORITMOS<br>
 Conjunto de projetos para demonstrar nossos conhecimentos sobre a materia de PA
 
 ## Videos de Apresentação
-Link trabalho 1: link
+Link trabalho 1: [link](https://youtu.be/J0uV3195utM)
 
 ## Instalação 
 Trabalho 1:<br>
@@ -29,4 +29,3 @@ Trabalho 1: consiste numa aplicação de linha de comando (CLI) em Java. O siste
 
 O algoritmo avalia e escolhe as rotas minimizando o custo total, tomando decisões matemáticas para desviar ou atravessar obstáculos com pesos diferentes.
 
-## Funcionalidades e Mecânicas
